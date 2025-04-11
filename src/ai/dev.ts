@@ -1,1 +1,2 @@
-// Flows will be imported for their side effects in this file.
+import '@/ai/flows/generate-wise-saying.ts';
+import '@/ai/flows/generate-saying-explanation.ts';
