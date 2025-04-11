@@ -1,8 +1,7 @@
-// 'use server';
 /**
  * @fileOverview Generates a wise saying based on a user-provided topic, attributed to a wise owl.
  *
- * - generateWiseSaying - A function that generates a wise saying.
+ * - generate - A function that generates a wise saying.
  * - GenerateWiseSayingInput - The input type for the generateWiseSaying function.
  * - GenerateWiseSayingOutput - The return type for the generateWiseSaying function.
  */
@@ -22,10 +21,18 @@ const GenerateWiseSayingOutputSchema = z.object({
 });
 export type GenerateWiseSayingOutput = z.infer<typeof GenerateWiseSayingOutputSchema>;
 
-export async function generateWiseSaying(input: GenerateWiseSayingInput): Promise<GenerateWiseSayingOutput> {
-  return generateWiseSayingFlow(input);
+export async function generate(input: GenerateWiseSayingInput): Promise<GenerateWiseSayingOutput> {
+  let output;
+  try {
+    const result = await prompt(input);
+    output = result.output;
+    console.log('Raw AI Response:', result);
+    return output!;
+  } catch (error) {
+    console.error('Error generating wise saying:', error);
+    return {wiseSaying:'An error has occurred.'};
+  }
 }
-
 const prompt = ai.definePrompt({
   name: 'generateWiseSayingPrompt',
   input: {
@@ -43,18 +50,3 @@ const prompt = ai.definePrompt({
 Wise Saying:
 `,
 });
-
-const generateWiseSayingFlow = ai.defineFlow<
-  typeof GenerateWiseSayingInputSchema,
-  typeof GenerateWiseSayingOutputSchema
->(
-  {
-    name: 'generateWiseSayingFlow',
-    inputSchema: GenerateWiseSayingInputSchema,
-    outputSchema: GenerateWiseSayingOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);

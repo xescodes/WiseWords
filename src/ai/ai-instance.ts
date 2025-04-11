@@ -10,7 +10,6 @@ if (!apiKey) {
 }
 
 export const ai = genkit({
-  promptDir: './prompts',
   plugins: [
     googleAI({
       apiKey: apiKey,

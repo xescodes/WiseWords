@@ -2,8 +2,8 @@
 'use client';
 
 import {useState} from 'react';
-import {generateWiseSaying} from '@/ai/flows/generate-wise-saying';
-import {explainSaying} from '@/ai/flows/generate-saying-explanation';
+import {generate} from '@/ai/flows/generate-wise-saying';
+import {generateExplanation} from '@/ai/flows/generate-saying-explanation';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Textarea} from '@/components/ui/textarea';
@@ -18,7 +18,7 @@ export default function Home() {
   const [saving, setSaving] = useState(false);
   const {toast} = useToast();
 
-  const generateSaying = async () => {
+  const generateNewSaying = async () => {
     if (!topic) {
       toast({
         title: 'Error',
@@ -26,21 +26,21 @@ export default function Home() {
       });
       return;
     }
-    const result = await generateWiseSaying({topic});
+    const result = await generate({topic});
     setWiseSaying(result?.wiseSaying ?? 'Could not generate a wise saying.');
     setExplanation(null); // Reset explanation when generating a new saying
   };
 
-  const generateExplanation = async () => {
-    if (!wiseSaying) {
+    const getExplanation = async () => {
+      if (!wiseSaying) {
       toast({
         title: 'Error',
         description: 'Please generate a wise saying first.',
       });
       return;
     }
-    const result = await explainSaying({saying: wiseSaying});
-    setExplanation(result?.explanation ?? 'Could not generate an explanation.');
+    const result = await generateExplanation({saying: wiseSaying});
+        setExplanation(result?.explanation ?? 'Could not generate an explanation.');
   };
 
   const saveSaying = async () => {
@@ -70,7 +70,7 @@ export default function Home() {
               value={topic}
               onChange={e => setTopic(e.target.value)}
             />
-            <Button onClick={generateSaying} className="bg-primary text-primary-foreground hover:bg-primary/80">
+            <Button onClick={generateNewSaying} className="bg-primary text-primary-foreground hover:bg-primary/80">
               Generate Saying
             </Button>
           </div>
@@ -91,7 +91,7 @@ export default function Home() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={generateExplanation}
+                  onClick={getExplanation}
                   disabled={!wiseSaying}
                   className="mr-2"
                 >
